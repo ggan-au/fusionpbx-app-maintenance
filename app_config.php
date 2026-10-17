@@ -201,3 +201,11 @@
 	$apps[$x]['default_settings'][$y]['default_setting_value'] = "#d4d4d4";
 	$apps[$x]['default_settings'][$y]['default_setting_enabled'] = "false";
 	$apps[$x]['default_settings'][$y]['default_setting_description'] = "";
+	$y++;
+	$apps[$x]['default_settings'][$y]['default_setting_uuid'] = "0df3cd64-a164-4a24-ad39-4edc571be033";
+	$apps[$x]['default_settings'][$y]['default_setting_category'] = "maintenance";
+	$apps[$x]['default_settings'][$y]['default_setting_subcategory'] = "hostname";
+	$apps[$x]['default_settings'][$y]['default_setting_name'] = "text";
+	$apps[$x]['default_settings'][$y]['default_setting_value'] = "";
+	$apps[$x]['default_settings'][$y]['default_setting_enabled'] = "false";
+	$apps[$x]['default_settings'][$y]['default_setting_description'] = "Hostname of the server to run maintenance on. Clusters should only run one maintenance service per cluster.";
