@@ -157,14 +157,18 @@ class maintenance_service extends service {
 	 */
 	public function reload_settings(): void {
 		static $re = '';
-		//reload the config file
+
+		//re-read the config file to get changes in the configuration file
 		self::$config->read();
 
 		//re-connect the database just-in-case the config settings have changed
 		$this->database->connect();
 
-		//reload settings
-		$this->settings->reload();
+		//create a new database connection using the updated configuration
+		$this->database = new database(['config' => static::$config]);
+
+		//reload the settings and set the settings to use the connected database
+		$this->settings = new settings(['database' => $this->database]);
 
 		//check if we are enabled to work or not
 		$this->enabled = $this->settings->get('maintenance', 'enabled', false) === true ? true : false;
@@ -183,6 +187,10 @@ class maintenance_service extends service {
 		if ($re === '') {
 			$re = 're';
 		}
+
+		//check for the hostname to ensure we are supposed to run on this server
+		//clusters should only run one maintenance service per cluster
+		$this->enabled = $this->enabled && $this->settings->get('maintenance', 'hostname', gethostname());
 	}
 
 	/**
@@ -199,17 +207,11 @@ class maintenance_service extends service {
 		//load functions
 		require_once dirname(__DIR__, 4) . '/resources/functions.php';
 
-		//set the database to use the config file
-		$this->database = new database(['config' => static::$config]);
-
 		//save the database for logging but object and static properties can't the same name
 		self::$db = $this->database;
 
 		//initialize the logs for the workers
 		self::$logs = [];
-
-		//set the settings to use the connected database
-		$this->settings = new settings(['database' => $this->database]);
 
 		//reload the default settings
 		$this->reload_settings();
