@@ -161,11 +161,12 @@ class maintenance_service extends service {
 		//re-read the config file to get changes in the configuration file
 		self::$config->read();
 
-		//re-connect the database just-in-case the config settings have changed
-		$this->database->connect();
-
 		//create a new database connection using the updated configuration
 		$this->database = new database(['config' => static::$config]);
+		$this->database->connect();
+
+		//use the current database connection when flushing maintenance logs
+		self::$db = $this->database;
 
 		//reload the settings and set the settings to use the connected database
 		$this->settings = new settings(['database' => $this->database]);
@@ -206,9 +207,6 @@ class maintenance_service extends service {
 
 		//load functions
 		require_once dirname(__DIR__, 4) . '/resources/functions.php';
-
-		//save the database for logging but object and static properties can't the same name
-		self::$db = $this->database;
 
 		//initialize the logs for the workers
 		self::$logs = [];
